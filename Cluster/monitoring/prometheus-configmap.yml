@@ -4,7 +4,7 @@ data:
     {}
   alerts: |
     {}
-  allow-snippet-annotations: "false"
+  allow-snippet-annotations: 'false'
   prometheus.yml: |
     global:
       evaluation_interval: 1m
@@ -312,6 +312,22 @@ data:
         target_label: node
       scrape_interval: 5m
       scrape_timeout: 30s
+    - job_name: 'blackbox'
+      metrics_path: /probe
+      params:
+        module: [http_2xx]  # Look for a HTTP 200 response.
+      static_configs:
+        - targets:
+          - http://prometheus.io    # Target to probe with http.
+          - https://prometheus.io   # Target to probe with https.
+          - http://a7f8832f3bb474c719594a80da279eb8-1327839745.ap-south-1.elb.amazonaws.com     
+      relabel_configs:
+        - source_labels: [__address__]
+          target_label: __param_target
+        - source_labels: [__param_target]
+          target_label: instance
+        - target_label: __address__
+          replacement: a06e6f00a304944f78345da78b7b8fb2-1129551642.ap-south-1.elb.amazonaws.com:9115
     alerting:
       alertmanagers:
       - kubernetes_sd_configs:
@@ -341,7 +357,7 @@ metadata:
   annotations:
     meta.helm.sh/release-name: prometheus
     meta.helm.sh/release-namespace: monitoring
-  creationTimestamp: "2025-08-06T09:51:18Z"
+  creationTimestamp: '2025-08-06T09:51:18Z'
   labels:
     app.kubernetes.io/component: server
     app.kubernetes.io/instance: prometheus
@@ -352,5 +368,5 @@ metadata:
     helm.sh/chart: prometheus-27.29.0
   name: prometheus-server
   namespace: monitoring
-  resourceVersion: "21251"
+  resourceVersion: '21251'
   uid: 09927a6f-333e-415d-bd51-361a5fc59f38
